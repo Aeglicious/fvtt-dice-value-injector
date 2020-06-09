@@ -1,7 +1,7 @@
 class InjectedChatMessage extends ChatMessage {
   static async create(data, options) {
     // Content strings of the form "#d#" for rolls appear in chat but not in macros.
-    if (!isNaN(data.content)) {
+    if (isNaN(data.content)) {
       console.log("Likely coming from chat.");
       return super.create(data, options);
     }
