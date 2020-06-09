@@ -1,6 +1,7 @@
 class InjectedChatMessage extends ChatMessage {
   static async create(data, options) {
-    if (String(data.content).indexOf("d") !== -1) {
+    // Content strings of the form "#d#" for rolls appear in chat but not in macros.
+    if (!isNaN(data.content)) {
       console.log("Likely coming from chat.");
       return super.create(data, options);
     }
@@ -10,11 +11,6 @@ class InjectedChatMessage extends ChatMessage {
     const roll = inJson ? Roll.fromJSON(data.roll) : data.roll;
     if (!(data.roll || data._roll)) {
       console.log("No roll.");
-      return super.create(data, options);
-    }
-
-    if (!showEditMenu) {
-      console.log("Conditions to show edit menu have not been met.");
       return super.create(data, options);
     }
 
@@ -58,18 +54,6 @@ class InjectedChatMessage extends ChatMessage {
     });
   }
 }
-
-let showEditMenu = false;
-window.addEventListener("keydown", (e) => {
-  if (e.altKey && !showEditMenu) {
-    showEditMenu = true;
-  }
-});
-window.addEventListener("keyup", (e) => {
-  if (!e.altKey && showEditMenu) {
-    showEditMenu = false;
-  }
-});
 
 getDiceFromRoll = (roll) => roll.parts.filter((part) => part instanceof Die);
 replaceDiceInRoll = (parts, replacedDice) => {
